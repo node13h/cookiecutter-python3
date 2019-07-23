@@ -1,0 +1,13 @@
+{
+    "project_name": "project-name",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "project_description": "Short description",
+    "project_url": "",
+    "project_author": "Sergej Alikov",
+    "project_author_email": "sergej.alikov@gmail.com",
+    "open_source_license": [
+        "MIT",
+        "GPLv3",
+        "AGPLv3"
+    ]
+}
