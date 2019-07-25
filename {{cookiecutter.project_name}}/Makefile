@@ -2,6 +2,9 @@ PROJECT := {{ cookiecutter.project_name }}
 VERSION = $(shell cat VERSION)
 SDIST_TARBALL = dist/$(PROJECT)-$(VERSION).tar.gz
 
+export RELEASE_REMOTE := origin
+export RELEASE_PUBLISH := 0
+
 .PHONY: all clean develop shell lint test update-deps release-start release-finish sdist publish
 
 all:
@@ -9,7 +12,8 @@ all:
 clean:
 	rm -rf dist
 	rm -rf build
-	rm -rf *.egg-info
+	rm -f *.egg-info
+	rm -f Pipfile.lock
 	pipenv --rm || true
 
 develop:
@@ -28,12 +32,13 @@ update-deps:
 	pipenv update
 
 release-start: test
-	pipenv run lase --remote origin start $${RELEASE_VERSION:+--version "$${RELEASE_VERSION}"}
+	pipenv run lase $${RELEASE_REMOTE:+--remote "$${RELEASE_REMOTE}"} start $${RELEASE_VERSION:+--version "$${RELEASE_VERSION}"}
 
 release-finish:
-	pipenv run lase --remote origin finish
+	pipenv run lase $${RELEASE_REMOTE:+--remote "$${RELEASE_REMOTE}"} finish
+	if [ "$${RELEASE_PUBLISH}" -eq 1 ]; then $(MAKE) $(lastword $(MAKEFILE_LIST)) publish; fi
 
-sdist: assets $(SDIST_TARBALL)
+sdist: $(SDIST_TARBALL)
 
 $(SDIST_TARBALL):
 	python3 setup.py sdist
